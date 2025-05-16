@@ -21,6 +21,9 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.mapping.MappingConfig
+import org.dhis2.data.mapping.MappingService
+import org.dhis2.data.mapping.MappingServiceImpl
 import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.data.metadata.FileResourceConfiguration
@@ -56,6 +59,7 @@ class EnrollmentModule(
     val programUid: String,
     private val enrollmentMode: EnrollmentActivity.EnrollmentMode,
     private val activityContext: Context,
+    private val mappingConfigs: List<MappingConfig>, // Inject mapping configuration
 ) {
 
     @Provides
@@ -63,7 +67,6 @@ class EnrollmentModule(
     fun provideEnrollmentRepository(d2: D2): EnrollmentObjectRepository {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid)
     }
-
     @Provides
     @PerActivity
     fun provideTeiRepository(
@@ -161,6 +164,7 @@ class EnrollmentModule(
         eventCollectionRepository: EventCollectionRepository,
         teiAttributesProvider: TeiAttributesProvider,
         dateEditionWarningHandler: DateEditionWarningHandler,
+        mappingService:MappingService,
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -174,7 +178,7 @@ class EnrollmentModule(
             matomoAnalyticsController,
             eventCollectionRepository,
             teiAttributesProvider,
-            dateEditionWarningHandler,
+            dateEditionWarningHandler,mappingService
         )
     }
 
@@ -192,7 +196,7 @@ class EnrollmentModule(
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
         searchTEIRepository: SearchTEIRepository,
-        resourceManager: ResourceManager,
+        resourceManager: ResourceManager,  mappingService:MappingService,
     ): ValueStore {
         val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
         return ValueStoreImpl(
@@ -204,7 +208,7 @@ class EnrollmentModule(
             networkUtils,
             searchTEIRepository,
             fieldErrorMessageProvider,
-            resourceManager,
+            resourceManager,mappingService
         )
     }
 

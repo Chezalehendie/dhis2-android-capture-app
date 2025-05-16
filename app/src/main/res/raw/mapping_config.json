@@ -1,0 +1,239 @@
+[
+  {
+    "description": "Maps common fields between ANC and Maternal-Child Health programs",
+    "id": "config1",
+    "isActive": true,
+    "name": "ANC to MCH Program Mapping",
+    "programMappings": [
+      {
+        "elementMappings": [
+          {
+            "conditions": [
+              {
+                "type": "MAX_DAYS_OLD",
+                "value": 30
+              }
+            ],
+            "priority": 1,
+            "sourceElement": "DE_WEIGHT_ANC",
+            "targetElement": "DE_WEIGHT_MCH",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "DE_HEIGHT_ANC",
+            "targetElement": "DE_HEIGHT_MCH",
+            "transformation": "DIRECT_COPY"
+          }
+        ],
+        "sourceProgram": "ANC_PROG_UID",
+        "targetProgram": "MCH_PROG_UID"
+      }
+    ],
+    "rules": {
+      "allowCrossTypeMapping": false,
+      "conflictResolution": "HIGHEST_PRIORITY",
+      "valueTypeMatching": "STRICT"
+    }
+  },
+  {
+    "description": "Maps common fields between Person Register and Community Register",
+    "id": "config2",
+    "isActive": true,
+    "name": "Person to Community Register Mapping",
+    "programMappings": [
+      {
+        "elementMappings": [
+          {
+            "priority": 1,
+            "sourceElement": "National_ID_QR_Code",
+            "targetElement": "Household_Code",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "National_ID",
+            "targetElement": "Household_Code",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Name",
+            "targetElement": "Village_Name",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Sex",
+            "targetElement": "Group_Village_Head",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Date_of_Birth",
+            "targetElement": "Traditional_Authority",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Person_Residence_Status",
+            "targetElement": "Coordinates",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Person_Residence_Status-Family_Planning",
+            "targetElement": "Household_Code",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Household_Code",
+            "targetElement": "Household_Code",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Household_Member_Number",
+            "targetElement": "Village_Name",
+            "transformation": "DIRECT_COPY"
+          }
+        ],
+        "sourceProgram": "PERSON_REGISTER_UID",
+        "targetProgram": "COMMUNITY_REGISTER_UID"
+      },
+      {
+        "elementMappings": [
+          {
+            "priority": 1,
+            "sourceElement": "Village_Name",
+            "targetElement": "Name",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Group_Village_Head",
+            "targetElement": "Sex",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Traditional_Authority",
+            "targetElement": "Date_of_Birth",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Coordinates",
+            "targetElement": "Person_Residence_Status",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Household_Code",
+            "targetElement": "National_ID_QR_Code",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Household_Code",
+            "targetElement": "National_ID",
+            "transformation": "DIRECT_COPY"
+          },
+          {
+            "priority": 1,
+            "sourceElement": "Village_Name",
+            "targetElement": "Household_Member_Number",
+            "transformation": "DIRECT_COPY"
+          }
+        ],
+        "sourceProgram": "COMMUNITY_REGISTER_UID",
+        "targetProgram": "PERSON_REGISTER_UID"
+      }
+    ],
+    "rules": {
+      "allowCrossTypeMapping": false,
+      "conflictResolution": "HIGHEST_PRIORITY",
+      "valueTypeMatching": "STRICT"
+    }
+  },
+  {
+      "description": "Maps common fields between Person Register and IMCI programs",
+      "id": "config3",
+      "isActive": true,
+      "name": "Person to IMCI Program Mapping",
+      "programMappings": [
+        {
+          "elementMappings": [
+            {
+              "priority": 1,
+              "sourceElement": "National_ID_QR_Code",
+              "targetElement": "National_ID_QR_Code",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "National_ID",
+              "targetElement": "National_ID",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "Name",
+              "targetElement": "Name",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "Sex",
+              "targetElement": "Sex",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "Date_of_Birth",
+              "targetElement": "Date_of_Birth",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "Person_Residence_Status",
+              "targetElement": "Person_Residence_Status",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "Person_Residence_Status-Family_Planning",
+              "targetElement": "Person_Residence_Status-Family_Planning",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "Household_Code",
+              "targetElement": "Household_Code",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "Household_Member_Number",
+              "targetElement": "Household_Member_Number",
+              "transformation": "DIRECT_COPY"
+            },
+            {
+              "priority": 1,
+              "sourceElement": "Village_Name",
+              "targetElement": "Village_Name",
+              "transformation": "DIRECT_COPY"
+            }
+          ],
+          "sourceProgram": "PERSON_REGISTER_UID",
+          "targetProgram": "IMCI_PROG_UID"
+        }
+      ],
+      "rules": {
+        "allowCrossTypeMapping": false,
+        "conflictResolution": "HIGHEST_PRIORITY",
+        "valueTypeMatching": "STRICT"
+      }
+    }
+]

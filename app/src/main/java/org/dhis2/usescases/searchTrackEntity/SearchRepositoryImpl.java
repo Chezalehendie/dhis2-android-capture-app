@@ -27,6 +27,8 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
+import org.dhis2.data.mapping.MappedElement;
+import org.dhis2.data.mapping.MappingService;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
@@ -267,6 +269,26 @@ public class SearchRepositoryImpl implements SearchRepository {
                         if (fromRelationshipUid != null) {
                             d2.trackedEntityModule().trackedEntityInstanceService().blockingInheritAttributes(fromRelationshipUid, uid, programUid);
                         }
+
+                        MappingService mappingService = new MappingService() {
+                            @Override
+                            public boolean shouldOverrideValue(@org.jetbrains.annotations.Nullable Object existingValue, @org.jetbrains.annotations.Nullable Object newValue) {
+                                return false;
+                            }
+
+                            @Override
+                            public MappedElement getMappedElement(String sourceElement, String sourceProgram, String targetProgram) {
+                                // Provide implementation or return null if not applicable
+                                return null;
+                            }
+                            @Override
+                            public @NotNull Map<@NotNull String, @NotNull Object> autoPopulate
+                        (Map < String, ? extends Object > sourceData, String sourceProgram, String
+                        targetProgram) {
+                                // Provide implementation or return an empty map if not applicable
+                                return new HashMap<>();
+                            }
+                        };
                         ValueStore valueStore = new ValueStoreImpl(d2,
                                 uid,
                                 EntryMode.ATTR,
@@ -275,7 +297,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 networkUtils,
                                 searchTEIRepository,
                                 new FieldErrorMessageProvider(resources.getContext()),
-                                resources
+                                resources,mappingService
                         );
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))

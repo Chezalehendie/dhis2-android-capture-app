@@ -64,6 +64,7 @@ class EnrollmentPresenterImplTest {
             eventCollectionRepository,
             teiAttributesProvider,
             dateEntryWarningHelper,
+            mappingService,
         )
     }
 

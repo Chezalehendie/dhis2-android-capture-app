@@ -1,5 +1,4 @@
 package org.dhis2;
-
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
 import org.dhis2.commons.locationprovider.LocationModule;
 import org.dhis2.commons.locationprovider.LocationProvider;
@@ -15,6 +14,7 @@ import org.dhis2.commons.service.SessionManagerModule;
 import org.dhis2.commons.service.SessionManagerService;
 import org.dhis2.data.dispatcher.DispatcherModule;
 import org.dhis2.data.forms.dataentry.validation.ValidatorModule;
+import org.dhis2.data.mapping.MappingModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.service.workManager.WorkManagerController;
@@ -35,9 +35,6 @@ import javax.inject.Singleton;
 import dagger.Component;
 import dispatch.core.DispatcherProvider;
 
-/**
- * Created by ppajuelo on 10/10/2017.
- */
 @Singleton
 @Component(modules = {
         AppModule.class,
@@ -53,9 +50,10 @@ import dispatch.core.DispatcherProvider;
         DispatcherModule.class,
         FeatureConfigModule.class,
         NetworkUtilsModule.class,
-        CustomDispatcherModule.class
+        CustomDispatcherModule.class,
+        MappingModule.class,
 })
-public  interface AppComponent {
+public interface AppComponent {
 
     @Component.Builder
     interface Builder {
@@ -101,13 +99,12 @@ public  interface AppComponent {
     LocationProvider locationProvider();
 
     NetworkUtils networkUtilsProvider();
-
     DispatcherProvider customDispatcherProvider();
 
-    //injection targets
+    // Injection targets
     void inject(App app);
 
-    //sub-components
+    // Sub-components
     ServerComponent plus(ServerModule serverModule);
 
     SplashComponent plus(SplashModule module);

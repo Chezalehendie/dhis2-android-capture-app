@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
+import org.dhis2.data.mapping.MappingService
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 
@@ -91,6 +92,7 @@ class DataValueModule(
         networkUtils: NetworkUtils,
         searchRepository: SearchTEIRepository,
         resourceManager: ResourceManager,
+        mappingService: MappingService,
     ): ValueStore {
         return ValueStoreImpl(
             d2,
@@ -102,6 +104,7 @@ class DataValueModule(
             searchRepository,
             FieldErrorMessageProvider(activityContext),
             resourceManager,
+            mappingService,
         )
     }
 

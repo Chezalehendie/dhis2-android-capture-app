@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants.ENROLLMENT_UID
@@ -16,6 +17,7 @@ import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.data.mapping.MappingConfig
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
@@ -33,7 +35,9 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import java.io.InputStreamReader
 import javax.inject.Inject
+import com.google.gson.reflect.TypeToken
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
@@ -90,6 +94,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
             ?: EnrollmentMode.NEW
         val openErrorLocation = intent.getBooleanExtra(OPEN_ERROR_LOCATION, false)
+        // Load mappingConfigs from JSON
+        val inputStream = resources.openRawResource(R.raw.mapping_config)
+        val reader = InputStreamReader(inputStream)
+        val type = object : TypeToken<List<MappingConfig>>() {}.type
+        val mappingConfigs: List<MappingConfig> = Gson().fromJson(reader, type)
         (applicationContext as App).userComponent()?.plus(
             EnrollmentModule(
                 this,
@@ -97,6 +106,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 programUid,
                 enrollmentMode,
                 context,
+                mappingConfigs = mappingConfigs
             ),
         )?.inject(this)
 
@@ -219,6 +229,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         attemptFinish()
+        super.onBackPressed() // Ensure the parent class behavior is called
     }
 
     private fun attemptFinish() {

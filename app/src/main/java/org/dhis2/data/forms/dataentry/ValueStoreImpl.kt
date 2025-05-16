@@ -8,6 +8,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
+import org.dhis2.data.mapping.MappingService
 import org.dhis2.form.R
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
@@ -19,6 +20,7 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import java.io.File
+import timber.log.Timber
 
 class ValueStoreImpl(
     private val d2: D2,
@@ -30,6 +32,7 @@ class ValueStoreImpl(
     private val searchTEIRepository: SearchTEIRepository,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
     private val resourceManager: ResourceManager,
+    private val mappingService: MappingService,
 ) : ValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
     var overrideProgramUid: String? = null
@@ -186,7 +189,48 @@ class ValueStoreImpl(
         }
     }
 
-    private fun saveDataElement(uid: String, value: String?): Flowable<StoreResult> {
+    fun saveDataElement(dataElementUid: String, value: String?): Flowable<StoreResult> {
+        // Determine source and target programs
+        val sourceProgram = enrollmentRepository?.blockingGet()?.program()
+        val targetProgram = overrideProgramUid
+
+        if (sourceProgram != null && targetProgram != null) {
+            val mappedElement = mappingService.getMappedElement(dataElementUid, sourceProgram, targetProgram)
+            if (mappedElement != null) {
+                try {
+                    val existingValue = d2.dataValueModule().dataValues()
+                        .value(
+                            mappedElement.targetProgram,
+                            mappedElement.targetElement,
+                            "default", // Replace with actual categoryOptionComboUid
+                            "default",
+                            attributeOptionCombo = "default" // Replace with actual attributeOptionComboUid
+                        )
+                        .blockingGet()
+
+                    if (mappingService.shouldOverrideValue(existingValue?.value(), value)) {
+                        d2.dataValueModule().dataValues()
+                            .value(
+                                mappedElement.targetProgram,
+                                mappedElement.targetElement,
+                                "default", // Replace with actual categoryOptionComboUid
+                                "default",
+                                attributeOptionCombo = "default" // Replace with actual attributeOptionComboUid
+                            )
+                            .blockingSet(value)
+                    }
+                } catch (e: Exception) {
+                    // Log the error but continue with normal save operation
+                    Timber.e(e, "Error synchronizing data to mapped element")
+                }
+            }
+        }
+
+        // Call the actual save logic
+        return saveDataElementInternal(dataElementUid, value)
+    }
+
+    private fun saveDataElementInternal(uid: String, value: String?): Flowable<StoreResult> {
         val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
             .value(recordUid, uid)
         val de = d2.dataElementModule().dataElements().uid(uid).blockingGet()
@@ -228,7 +272,6 @@ class ValueStoreImpl(
             Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
         }
     }
-
     private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
         return if (!networkUtils.isOnline()) {
             dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
