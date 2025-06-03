@@ -218,6 +218,12 @@ class SyncPresenterImpl(
                     setUpSMS()
                 },
         ).andThen(
+            Completable.fromObservable(
+                d2.dataStoreModule().dataStoreDownloader()
+                    .byNamespace().eq("programMapping")
+                    .download(),
+            ),
+        ).andThen(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         ).andThen(
             Completable.fromObservable(
@@ -225,7 +231,8 @@ class SyncPresenterImpl(
                     .byDomainType().eq(FileResourceDomainType.ICON)
                     .download(),
             ),
-        ).blockingAwait()
+        )
+        .blockingAwait()
     }
 
     private fun setUpSMS() {
