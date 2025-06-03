@@ -223,13 +223,13 @@ class SyncPresenterImpl(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         ).andThen(
             Completable.fromObservable(
-                d2.dataStoreModule().dataStoreDownloader().byNamespace().eq("ProgramMapping").download()
-            )
-        ).andThen(
-            Completable.fromObservable(
                 d2.fileResourceModule().fileResourceDownloader()
                     .byDomainType().eq(FileResourceDomainType.ICON)
                     .download(),
+            ),
+        ).andThen(
+            Completable.fromObservable(
+                d2.dataStoreModule().dataStoreDownloader().byNamespace().eq("programMapping").download()
             ),
         ).blockingAwait()
     }
