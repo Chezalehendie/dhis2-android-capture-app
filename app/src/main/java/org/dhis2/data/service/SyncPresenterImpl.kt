@@ -1,6 +1,7 @@
 package org.dhis2.data.service
 
 import androidx.annotation.VisibleForTesting
+import androidx.compose.runtime.key
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
@@ -38,6 +39,7 @@ import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
+import org.koin.core.component.getScopeName
 import timber.log.Timber
 import java.util.Calendar
 import kotlin.math.ceil
@@ -219,6 +221,10 @@ class SyncPresenterImpl(
                 },
         ).andThen(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
+        ).andThen(
+            Completable.fromObservable(
+                d2.dataStoreModule().dataStoreDownloader().byNamespace().eq("ProgramMapping").download()
+            )
         ).andThen(
             Completable.fromObservable(
                 d2.fileResourceModule().fileResourceDownloader()
