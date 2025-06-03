@@ -14,6 +14,7 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.form.model.RowAction
+import org.dhis2.usescases.customConfigTransformation.DatastoreConfigs
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
@@ -34,6 +35,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import timber.log.Timber
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
+import com.google.gson.Gson
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -50,6 +52,7 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val dateEditionWarningHandler: DateEditionWarningHandler,
+    private val datastoreConfigs: DatastoreConfigs // Injected DatastoreConfigs
 ) {
 
     private val disposable = CompositeDisposable()
@@ -257,6 +260,15 @@ class EnrollmentPresenterImpl(
         } catch (e: Exception) {
             Timber.d(e.message)
             true
+        }
+    }
+
+    fun loadDatastoreConfigs() {
+        val datastoreConfigs = datastoreConfigs.loadDatastoreConfigs()
+        if (datastoreConfigs != null) {
+            view.updateDatastoreConfigs(datastoreConfigs)
+        } else {
+            Timber.e("Failed to load datastore configs")
         }
     }
 }

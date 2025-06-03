@@ -1,6 +1,7 @@
 package org.dhis2.data.service
 
 import androidx.annotation.VisibleForTesting
+import androidx.compose.runtime.key
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
@@ -38,6 +39,7 @@ import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
+import org.koin.core.component.getScopeName
 import timber.log.Timber
 import java.util.Calendar
 import kotlin.math.ceil
@@ -54,9 +56,9 @@ class SyncPresenterImpl(
     override fun initSyncControllerMap() {
         Completable.fromCallable {
             val programMap: Map<String, D2ProgressStatus> =
-                d2.programModule().programs().blockingGetUids().map { programUid ->
+                d2.programModule().programs().blockingGetUids().associate { programUid ->
                     programUid to D2ProgressStatus(false, null)
-                }.toMap()
+                }
             val aggregateMap: Map<String, D2ProgressStatus> =
                 d2.dataSetModule().dataSets().blockingGetUids().associateWith {
                     D2ProgressStatus(false, null)
@@ -218,12 +220,6 @@ class SyncPresenterImpl(
                     setUpSMS()
                 },
         ).andThen(
-            Completable.fromObservable(
-                d2.dataStoreModule().dataStoreDownloader()
-                    .byNamespace().eq("programMapping")
-                    .download(),
-            ),
-        ).andThen(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         ).andThen(
             Completable.fromObservable(
@@ -231,8 +227,11 @@ class SyncPresenterImpl(
                     .byDomainType().eq(FileResourceDomainType.ICON)
                     .download(),
             ),
-        )
-        .blockingAwait()
+        ).andThen(
+            Completable.fromObservable(
+                d2.dataStoreModule().dataStoreDownloader().byNamespace().eq("programMapping").download()
+            ),
+        ).blockingAwait()
     }
 
     private fun setUpSMS() {
