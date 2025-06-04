@@ -20,11 +20,19 @@ class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
                         AutoEnrollmentConfigurations::class.java
                     )
                 }
-        } else Flowable.just(
-            Gson().fromJson(
-                AutoEnrollmentConfigurations.createDefaultEnrollmentConfigObject(),
-                AutoEnrollmentConfigurations::class.java
-            )
-        )
+        } else{
+            Flowable.empty()
+        }
+//        else Flowable.just(
+//            Gson().fromJson(
+//                AutoEnrollmentConfigurations.createDefaultEnrollmentConfigObject(),
+//                AutoEnrollmentConfigurations::class.java
+//            )
+//        )
+    }
+
+    override fun <trackedEntityDataValues> getTrackedEntityDataValues(dataElement: SourceprogramStageDataElement): Flowable<List<trackedEntityDataValues>> {
+        TODO("Not yet implemented")
     }
 }
+
