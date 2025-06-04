@@ -5,21 +5,23 @@ import org.hisp.dhis.android.core.D2
 
 class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
 
-    override fun <trackedEntityDataValues> getTrackedEntityDataValues(dataElement: SourceprogramStageDataElement): Flowable<List<trackedEntityDataValues>> {
+    override fun getTrackedEntityDataValues(dataElement: SourceprogramStageDataElement): Flowable<List<TrackedEntityDataValue>> {
+
         return d2.trackedEntityModule()
             .trackedEntityDataValues()
-            .byDataElement().eq(value = dataElement.toString())
+            .byDataElement()
+            .eq(value = dataElement.toString())
             .get()
-            .toFlowable() as Flowable<List<trackedEntityDataValues>>
+            .toFlowable()
     }
 
     override fun getCustomConfigurations(): Flowable<AutoEnrollmentConfigurations> {
-        val configEntry = d2.dataStoreModule()
+        val  configEntry = d2.dataStoreModule()
             .dataStore().byNamespace()
             .eq("programMapping")
             .byKey().eq("")
             .one().blockingGet()
-        return if (configEntry != null) {
+        return if(configEntry !=null){
             d2.dataStoreModule().dataStore().byNamespace().eq("programMapping")
                 .byKey().eq("mapping_rules").one().get()
                 .toFlowable().map {
@@ -28,8 +30,14 @@ class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
                         AutoEnrollmentConfigurations::class.java
                     )
                 }
-        } else {
+        } else{
             Flowable.empty()
         }
+//        else Flowable.just(
+//            Gson().fromJson(
+//                AutoEnrollmentConfigurations.createDefaultEnrollmentConfigObject(),
+//                AutoEnrollmentConfigurations::class.java
+//            )
+//        )
     }
 }
