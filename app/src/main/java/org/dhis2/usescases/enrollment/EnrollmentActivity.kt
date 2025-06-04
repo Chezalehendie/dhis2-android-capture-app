@@ -26,6 +26,7 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
+import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentConfigurations
 import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -341,4 +342,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             .setPositiveButton(R.string.button_ok, null)
         dialog.show()
     }
+
+    override fun updateDatastoreConfigs(autoEnrollmentsConfigurations: AutoEnrollmentConfigurations) {
+        TODO("Not yet implemented")
+    }
+
+
 }
