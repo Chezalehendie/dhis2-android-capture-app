@@ -31,8 +31,10 @@ class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
 //        )
     }
 
-    override fun <trackedEntityDataValues> getTrackedEntityDataValues(dataElement: SourceprogramStageDataElement): Flowable<List<trackedEntityDataValues>> {
+    override fun getTrackedEntityDataValues(dataElementsFromSourceProgram: SourceprogramStageDataElement): Flowable<List<trackedEntityDataValues>> {
         TODO("Not yet implemented")
     }
+
+
 }
 
