@@ -12,9 +12,9 @@ class DatastoreConfigs(private val d2: D2) {
                 .blockingDownload()
                 //.firstOrNull()?.value()
 
-            datastoreConfigsJson?.let {
-                Gson().fromJson(it, DatastoreConfigs::class.java)
-            }
+            val jsonString = datastoreConfigsJson.toString() // Ensure it's a valid JSON string
+
+            Gson().fromJson(jsonString, DatastoreConfigs::class.java)
         } catch (e: Exception) {
             Timber.e(e, "Error loading datastore configs")
             null
