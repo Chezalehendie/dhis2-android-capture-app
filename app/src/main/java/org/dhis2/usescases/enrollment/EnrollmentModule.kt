@@ -40,7 +40,6 @@ import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
-import org.dhis2.usescases.customConfigTransformation.DatastoreConfigs
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
