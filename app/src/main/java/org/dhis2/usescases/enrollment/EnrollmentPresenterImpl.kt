@@ -14,7 +14,6 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.form.model.RowAction
-import org.dhis2.usescases.customConfigTransformation.DatastoreConfigs
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
@@ -52,7 +51,7 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val dateEditionWarningHandler: DateEditionWarningHandler,
-    private val datastoreConfigs: DatastoreConfigs // Injected DatastoreConfigs
+//    private val datastoreConfigs: DatastoreConfigs // Injected DatastoreConfigs
 ) {
 
     private val disposable = CompositeDisposable()
@@ -146,6 +145,7 @@ class EnrollmentPresenterImpl(
                             {
                                 it.second?.let { eventUid ->
                                     view.openEvent(eventUid)
+
                                 } ?: view.openDashboard(it.first)
                             },
                             { Timber.tag(TAG).e(it) },
@@ -263,12 +263,12 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun loadDatastoreConfigs() {
-        val datastoreConfigs = datastoreConfigs.loadDatastoreConfigs()
-        if (datastoreConfigs != null) {
-            view.updateDatastoreConfigs(datastoreConfigs)
-        } else {
-            Timber.e("Failed to load datastore configs")
-        }
-    }
+//    fun loadDatastoreConfigs() {
+//        val datastoreConfigs = datastoreConfigs.loadDatastoreConfigs()
+//        if (datastoreConfigs != null) {
+//            view.updateDatastoreConfigs(datastoreConfigs)
+//        } else {
+//            Timber.e("Failed to load datastore configs")
+//        }
+//    }
 }
