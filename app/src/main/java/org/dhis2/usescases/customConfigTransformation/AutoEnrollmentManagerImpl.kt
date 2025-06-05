@@ -10,7 +10,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
         return d2.trackedEntityModule()
             .trackedEntityDataValues()
             .byDataElement()
-            .eq( dataElement)
+            .`in`(dataElements)
             .get()
             .toFlowable()
     }
@@ -19,7 +19,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
         val  configEntry = d2.dataStoreModule()
             .dataStore().byNamespace()
             .eq("programMapping")
-            .byKey().eq("")
+            .byKey().eq("mapping_rules")
             .one().blockingGet()
         return if(configEntry !=null){
             d2.dataStoreModule().dataStore().byNamespace().eq("programMapping")
