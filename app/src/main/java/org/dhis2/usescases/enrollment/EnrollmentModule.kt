@@ -161,7 +161,7 @@ class EnrollmentModule(
         eventCollectionRepository: EventCollectionRepository,
         teiAttributesProvider: TeiAttributesProvider,
         dateEditionWarningHandler: DateEditionWarningHandler,
-        datastoreConfigs: DatastoreConfigs // Provided DatastoreConfigs
+
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
@@ -176,7 +176,7 @@ class EnrollmentModule(
             eventCollectionRepository,
             teiAttributesProvider,
             dateEditionWarningHandler,
-            datastoreConfigs // Passed DatastoreConfigs
+            
         )
     }
 
