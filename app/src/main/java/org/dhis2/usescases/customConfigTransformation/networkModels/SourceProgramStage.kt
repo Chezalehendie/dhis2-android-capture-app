@@ -2,5 +2,13 @@ package org.dhis2.usescases.customConfigTransformation
 
 data class SourceProgramStage(
     val sourceProgramStage: String,
-    val sourceprogramStageDataElements: List<SourceprogramStageDataElement>
-)
+    val sourceProgramStageDataElements: List<SourceProgramStageDataElement>
+){
+    fun stageUid(): String {
+        return sourceProgramStage;
+    }
+
+    fun stageDataElements(): List<SourceProgramStageDataElement>{
+        return sourceProgramStageDataElements;
+    }
+}
