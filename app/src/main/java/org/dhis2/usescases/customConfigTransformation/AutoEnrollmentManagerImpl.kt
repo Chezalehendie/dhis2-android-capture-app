@@ -2,6 +2,7 @@ package org.dhis2.usescases.customConfigTransformation
 import com.google.gson.Gson
 import io.reactivex.Flowable
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
 class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
 
@@ -10,7 +11,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
         return d2.trackedEntityModule()
             .trackedEntityDataValues()
             .byDataElement()
-            .eq( dataElement)
+            .eq(dataElement.toString())
             .get()
             .toFlowable()
     }
