@@ -5,12 +5,12 @@ import org.hisp.dhis.android.core.D2
 
 class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
 
-    override fun getTrackedEntityDataValues(dataElement: SourceprogramStageDataElement): Flowable<List<TrackedEntityDataValue>> {
+    override fun getTrackedEntityDataValues(dataElement: List<SourceprogramStageDataElement>): Flowable<List<TrackedEntityDataValue>> {
 
         return d2.trackedEntityModule()
             .trackedEntityDataValues()
             .byDataElement()
-            .eq(value = dataElement.toString())
+            .eq( dataElement)
             .get()
             .toFlowable()
     }

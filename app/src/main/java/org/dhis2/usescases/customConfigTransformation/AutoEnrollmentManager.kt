@@ -6,5 +6,5 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 interface AutoEnrollmentManager {
     fun getCustomConfigurations(): Flowable<AutoEnrollmentConfigurations>
 
-    fun  getTrackedEntityDataValues(dataElementsFromSourceProgram: SourceprogramStageDataElement): Flowable<List<TrackedEntityDataValue>>
+    fun  getTrackedEntityDataValues(dataElementsFromSourceProgram: List<SourceprogramStageDataElement>): Flowable<List<TrackedEntityDataValue>>
 }
