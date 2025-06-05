@@ -1,4 +1,6 @@
 package org.dhis2.usescases.customConfigTransformation
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import io.reactivex.Flowable
 import org.hisp.dhis.android.core.D2
@@ -6,12 +8,13 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
 class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getTrackedEntityDataValues(dataElement: List<SourceprogramStageDataElement>): Flowable<List<TrackedEntityDataValue>> {
 
         return d2.trackedEntityModule()
             .trackedEntityDataValues()
             .byDataElement()
-            .eq(dataElement.toString())
+            .`in`(dataElement.map { it.sourceDataElement })
             .get()
             .toFlowable()
     }
@@ -20,7 +23,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2): AutoEnrollmentManager {
         val  configEntry = d2.dataStoreModule()
             .dataStore().byNamespace()
             .eq("programMapping")
-            .byKey().eq("")
+            .byKey().eq("mapping_rules")
             .one().blockingGet()
         return if(configEntry !=null){
             d2.dataStoreModule().dataStore().byNamespace().eq("programMapping")
