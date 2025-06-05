@@ -5,5 +5,5 @@ import io.reactivex.Flowable
 interface AutoEnrollmentManager {
     fun getCustomConfigurations(): Flowable<AutoEnrollmentConfigurations>
 
-    fun  getTrackedEntityDataValues(dataElementsFromSourceProgram: SourceprogramStageDataElement): Flowable<List<TrackedEntityDataValue>>
+    fun  getTrackedEntityDataValues(dataElementsFromSourceProgram: List<SourceprogramStageDataElement>): Flowable<List<TrackedEntityDataValue>>
 }
