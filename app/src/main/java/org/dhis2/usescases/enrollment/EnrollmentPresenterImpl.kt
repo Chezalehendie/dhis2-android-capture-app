@@ -34,7 +34,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import timber.log.Timber
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
-import com.google.gson.Gson
+import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentConfigurations
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -51,7 +51,7 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val dateEditionWarningHandler: DateEditionWarningHandler,
-//    private val datastoreConfigs: DatastoreConfigs // Injected DatastoreConfigs
+    private val autoEnrollmentConfigurations: AutoEnrollmentConfigurations // Injected DatastoreConfigs
 ) {
 
     private val disposable = CompositeDisposable()
@@ -263,12 +263,16 @@ class EnrollmentPresenterImpl(
         }
     }
 
-//    fun loadDatastoreConfigs() {
-//        val datastoreConfigs = datastoreConfigs.loadDatastoreConfigs()
-//        if (datastoreConfigs != null) {
-//            view.updateDatastoreConfigs(datastoreConfigs)
-//        } else {
-//            Timber.e("Failed to load datastore configs")
-//        }
-//    }
+    fun loadAutoEnrollmentConfigurations() {
+        val autoEnrollmentConfigurations = autoEnrollmentConfigurations.loadAutoEnrollmentConfigurations()
+        if (true) {
+            view.updateAutoEnrollmentConfigurations(AutoEnrollmentConfigurations)
+        } else {
+            Timber.e("Failed to load AutoEnrollmentConfigurations")
+        }
+    }
+}
+
+private fun AutoEnrollmentConfigurations.loadAutoEnrollmentConfigurations() {
+
 }

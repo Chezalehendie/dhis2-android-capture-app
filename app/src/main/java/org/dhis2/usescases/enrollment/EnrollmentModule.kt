@@ -176,7 +176,7 @@ class EnrollmentModule(
             eventCollectionRepository,
             teiAttributesProvider,
             dateEditionWarningHandler,
-
+            autoEnrollmentConfigurations = TODO(),
         )
     }
 

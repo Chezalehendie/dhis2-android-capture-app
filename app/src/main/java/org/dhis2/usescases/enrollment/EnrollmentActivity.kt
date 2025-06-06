@@ -220,6 +220,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        super.onBackPressed()
         attemptFinish()
     }
 
@@ -343,7 +344,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         dialog.show()
     }
 
-    override fun updateDatastoreConfigs(autoEnrollmentsConfigurations: AutoEnrollmentConfigurations) {
+    override fun updateDatastoreConfigs(autoEnrollmentsConfigurations: AutoEnrollmentConfigurations.Companion) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateAutoEnrollmentConfigurations(autoEnrollmentConfigurations: AutoEnrollmentConfigurations.Companion) {
         TODO("Not yet implemented")
     }
 
