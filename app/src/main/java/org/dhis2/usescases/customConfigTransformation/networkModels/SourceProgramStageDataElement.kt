@@ -1,10 +1,3 @@
-package org.dhis2.usescases.customConfigTransformation
+package org.dhis2.usescases.customConfigTransformation.networkModels
 
-data class SourceProgramStageDataElement(
-    val sourceDataElement: String
-) {
-    fun dataElementUid(): String {
-        return sourceDataElement
-    }
-}
-
+annotation class SourceProgramStageDataElement(val sourceDataElement: String)

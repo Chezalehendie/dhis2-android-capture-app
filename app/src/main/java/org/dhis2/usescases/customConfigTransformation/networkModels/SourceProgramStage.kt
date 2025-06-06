@@ -1,5 +1,7 @@
 package org.dhis2.usescases.customConfigTransformation
 
+import org.dhis2.usescases.customConfigTransformation.networkModels.SourceProgramStageDataElement
+
 data class SourceProgramStage(
     val sourceProgramStage: String,
     val sourceProgramStageDataElements: List<SourceProgramStageDataElement>
