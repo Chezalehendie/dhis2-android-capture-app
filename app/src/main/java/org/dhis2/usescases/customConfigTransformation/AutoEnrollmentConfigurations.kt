@@ -5,7 +5,7 @@ data class AutoEnrollmentConfigurations(
 ) {
     companion object {
         fun createDefaultEnrollmentConfigObject() {
-
+    
         }
     }
 }
