@@ -51,7 +51,7 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val dateEditionWarningHandler: DateEditionWarningHandler,
-    private val autoEnrollmentConfigurations: AutoEnrollmentConfigurations // injected auto enrollments configs
+    //private val autoEnrollmentConfigurations: AutoEnrollmentConfigurations // injected auto enrollments configs
 ) {
 
     private val disposable = CompositeDisposable()
@@ -263,16 +263,16 @@ class EnrollmentPresenterImpl(
         }
     }
 
-    fun loadAutoEnrollmentConfigurations() {
-        val autoEnrollmentConfigurations = autoEnrollmentConfigurations.loadAutoEnrollmentConfigurations()
-        if (true) {
-            view.updateAutoEnrollmentConfigurations(AutoEnrollmentConfigurations)
-        } else {
-            Timber.e("Failed to load AutoEnrollmentConfigurations")
-        }
-    }
+//    fun loadAutoEnrollmentConfigurations() {
+//        val autoEnrollmentConfigurations = autoEnrollmentConfigurations.loadAutoEnrollmentConfigurations()
+//        if (true) {
+//            view.updateAutoEnrollmentConfigurations(AutoEnrollmentConfigurations)
+//        } else {
+//            Timber.e("Failed to load AutoEnrollmentConfigurations")
+//        }
+//    }
 }
 
-private fun AutoEnrollmentConfigurations.loadAutoEnrollmentConfigurations() {
-    TODO("Not yet implemented")
-}
+//private fun AutoEnrollmentConfigurations.loadAutoEnrollmentConfigurations() {
+//
+//}

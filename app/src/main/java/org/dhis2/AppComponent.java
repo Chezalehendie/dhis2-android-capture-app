@@ -1,5 +1,6 @@
 package org.dhis2;
 
+
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
 import org.dhis2.commons.locationprovider.LocationModule;
 import org.dhis2.commons.locationprovider.LocationProvider;

@@ -344,13 +344,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         dialog.show()
     }
 
-    override fun updateDatastoreConfigs(autoEnrollmentsConfigurations: AutoEnrollmentConfigurations.Companion) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateAutoEnrollmentConfigurations(autoEnrollmentConfigurations: AutoEnrollmentConfigurations.Companion) {
-        TODO("Not yet implemented")
-    }
+//    override fun updateDatastoreConfigs(autoEnrollmentsConfigurations: AutoEnrollmentConfigurations.Companion) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateAutoEnrollmentConfigurations(autoEnrollmentConfigurations: AutoEnrollmentConfigurations.Companion) {
+//        TODO("Not yet implemented")
+//    }
 
 
 }
