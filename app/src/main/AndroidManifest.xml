@@ -122,7 +122,7 @@
             android:name=".usescases.enrollment.EnrollmentActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
-        <activity android:name=".usescases.events.ScheduledEventActivity" />
+        <activity android:name=".usescases.enrollment.events.ScheduledEventActivity" />
 
         <activity
             android:name=".usescases.notes.noteDetail.NoteDetailActivity"

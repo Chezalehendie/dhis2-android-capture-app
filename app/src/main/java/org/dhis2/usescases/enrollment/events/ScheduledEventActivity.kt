@@ -1,4 +1,4 @@
-package org.dhis2.usescases.events
+package org.dhis2.usescases.enrollment.events
 
 import android.content.Context
 import android.content.Intent

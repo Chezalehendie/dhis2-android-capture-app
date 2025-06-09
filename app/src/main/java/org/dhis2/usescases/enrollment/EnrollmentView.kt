@@ -22,6 +22,6 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun performSaveClick()
     fun displayTeiPicture(picturePath: String)
     fun showDateEditionWarning(message: String?)
-//    fun updateDatastoreConfigs(autoEnrollmentsConfigurations: AutoEnrollmentConfigurations.Companion)
-//    fun updateAutoEnrollmentConfigurations(autoEnrollmentConfigurations: AutoEnrollmentConfigurations.Companion)
+    fun updateDatastoreConfigs(autoEnrollmentsConfigurations: AutoEnrollmentConfigurations.Companion)
+    fun updateAutoEnrollmentConfigurations(autoEnrollmentConfigurations: AutoEnrollmentConfigurations.Companion)
 }

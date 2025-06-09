@@ -1,5 +1,7 @@
 package org.dhis2.usescases.events
 
+import org.dhis2.usescases.enrollment.events.ScheduledEventContract
+import org.dhis2.usescases.enrollment.events.ScheduledEventPresenterImpl
 import org.hisp.dhis.android.core.D2
 import org.junit.Before
 import org.junit.Test

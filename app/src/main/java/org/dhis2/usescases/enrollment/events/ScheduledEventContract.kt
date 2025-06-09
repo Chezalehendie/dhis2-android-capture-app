@@ -1,4 +1,4 @@
-package org.dhis2.usescases.events
+package org.dhis2.usescases.enrollment.events
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +20,7 @@ class ScheduledEventContract {
         fun setStage(programStage: ProgramStage, event: Event)
         fun setProgram(program: Program)
         fun openFormActivity()
+        fun finish()
     }
 
     interface Presenter {

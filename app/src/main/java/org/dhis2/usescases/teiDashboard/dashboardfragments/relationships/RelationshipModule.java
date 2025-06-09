@@ -28,7 +28,7 @@ import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel;
 import org.dhis2.tracker.relationships.ui.mapper.RelationshipsUiStateMapper;
 import org.dhis2.tracker.ui.AvatarProvider;
-import org.dhis2.usescases.events.EventInfoProvider;
+import org.dhis2.usescases.enrollment.events.EventInfoProvider;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;

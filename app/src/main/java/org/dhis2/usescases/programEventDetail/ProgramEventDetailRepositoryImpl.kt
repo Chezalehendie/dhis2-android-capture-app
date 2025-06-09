@@ -13,7 +13,7 @@ import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.utils.DhisMapUtils
-import org.dhis2.usescases.events.EventInfoProvider
+import org.dhis2.usescases.enrollment.events.EventInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.category.CategoryOptionCombo

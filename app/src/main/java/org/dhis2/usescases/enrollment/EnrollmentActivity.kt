@@ -27,7 +27,7 @@ import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentConfigurations
-import org.dhis2.usescases.events.ScheduledEventActivity
+import org.dhis2.usescases.enrollment.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
