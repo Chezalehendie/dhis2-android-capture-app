@@ -58,8 +58,8 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
                 .byKey().eq("mapping_rules").one().get()
                 .map {
 
-
                     //TODO: Implement a proper deserialiser from JsonWrapper that gets saved in data store, Its not jus a string as it used to be.  It is returned as an object
+                    // Look at String split and play around with it.value() to get the actual Json which can then be passed to Gson().fromJson
                     Gson().fromJson(
                         it.value(),
                         AutoEnrollmentConfigurations::class.java
