@@ -20,7 +20,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.enrollment.events.ScheduledEventContract" />
+            type="org.dhis2.usescases.enrollment.events.ScheduledEventContract.Presenter" />
     </data>
 
     <LinearLayout

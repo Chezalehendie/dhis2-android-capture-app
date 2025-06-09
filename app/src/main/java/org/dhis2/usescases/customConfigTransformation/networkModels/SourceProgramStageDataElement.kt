@@ -1,3 +1,3 @@
 package org.dhis2.usescases.customConfigTransformation.networkModels
 
-annotation class SourceProgramStageDataElement(val sourceDataElement: String)
+data class SourceProgramStageDataElement(val sourceDataElement: String)

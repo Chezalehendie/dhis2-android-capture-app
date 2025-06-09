@@ -140,11 +140,6 @@ class EnrollmentPresenterImpl(
     }
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
-//     disposable.add(
-//
-//     )
-
-
 
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> {
@@ -154,20 +149,20 @@ class EnrollmentPresenterImpl(
                         autoEnrollmentConfigurations.getCustomConfigurations(),
                         enrollmentFormRepository.generateEvents(),
                         ::CustomConfigAndEvents
-                ).defaultSubscribe(
-                    schedulerProvider,
-                        onSuccess = {custoEndConfig->
-                           var enrollmentConfig = custoEndConfig.customConfigs
-                            val eventAndEnronment = custoEndConfig.eventAndEnrollment
-
-                           eventAndEnronment.second?.let { view.openEvent(it) }
-                               ?: view.openDashboard(eventAndEnronment.first)
+                    ).defaultSubscribe(
+                        schedulerProvider,
+                        onSuccess = { customConfigsAndEvents ->
+                            val enrollmentConfig = customConfigsAndEvents.enrollmentConfig
+                            val eventAndEnrollmentIds = customConfigsAndEvents.eventAndEnrollmentIds
+                            Timber.tag("CHECK_ENROLLMENNT").d(enrollmentConfig.mappingRules.toString())
+                            eventAndEnrollmentIds.second?.let { view.openEvent(it) }
+                                ?: view.openDashboard(eventAndEnrollmentIds.first)
                         },
-                       onError =  {
-
+                        onError = {
+Timber.tag("CHECK_ENROLLMENNT").e(it)
                         }
 
-                )
+                    )
                 )
             }
 
@@ -259,17 +254,19 @@ class EnrollmentPresenterImpl(
     fun isEventScheduleOrSkipped(eventUid: String): Boolean {
         val event = eventCollectionRepository.uid(eventUid).blockingGet()
         return event?.status() == EventStatus.SCHEDULE ||
-            event?.status() == EventStatus.SKIPPED ||
-            event?.status() == EventStatus.OVERDUE
+                event?.status() == EventStatus.SKIPPED ||
+                event?.status() == EventStatus.OVERDUE
     }
 
     fun suggestedReportDateIsNotFutureDate(eventUid: String): Boolean {
         return try {
             val event = eventCollectionRepository.uid(eventUid).blockingGet()
-            val programStage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
+            val programStage =
+                d2.programModule().programStages().uid(event?.programStage()).blockingGet()
             val enrollment = enrollmentObjectRepository.blockingGet()
             val generatedByEnrollment = programStage?.generatedByEnrollmentDate() ?: false
-            val startDate = if (generatedByEnrollment) enrollment?.enrollmentDate() else enrollment?.incidentDate()
+            val startDate =
+                if (generatedByEnrollment) enrollment?.enrollmentDate() else enrollment?.incidentDate()
             val calendar = DateUtils.getInstance().getCalendarByDate(startDate)
             calendar.add(DAY_OF_YEAR, programStage?.minDaysFromStart() ?: 0)
             val minStartReportEventDate = calendar.time
@@ -277,7 +274,7 @@ class EnrollmentPresenterImpl(
             return minStartReportEventDate.before(currentDate) || minStartReportEventDate == currentDate
         } catch (e: Exception) {
             Timber.d(e.message)
-            true 
+            true
         }
     }
 

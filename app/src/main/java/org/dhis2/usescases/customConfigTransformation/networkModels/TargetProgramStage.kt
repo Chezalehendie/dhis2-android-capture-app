@@ -1,4 +1,4 @@
-package org.dhis2.usescases.customConfigTransformation
+package org.dhis2.usescases.customConfigTransformation.networkModels
 
 data class TargetProgramStage(
     val targetProgramStage: String,

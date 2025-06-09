@@ -69,7 +69,7 @@ class ScheduledEventPresenterImpl(
     }
 
     override fun onBackClick() {
-       // view.finish()
+        view.finish()
     }
 
     override fun getEventTei(): String {
