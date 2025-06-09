@@ -1,4 +1,4 @@
-package org.dhis2.usescases.events
+package org.dhis2.usescases.enrollment.events
 
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons

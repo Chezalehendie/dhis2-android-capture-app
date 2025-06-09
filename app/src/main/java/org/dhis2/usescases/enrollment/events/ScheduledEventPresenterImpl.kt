@@ -1,4 +1,4 @@
-package org.dhis2.usescases.events
+package org.dhis2.usescases.enrollment.events
 
 import androidx.paging.PagingData
 import io.reactivex.Single
@@ -69,7 +69,7 @@ class ScheduledEventPresenterImpl(
     }
 
     override fun onBackClick() {
-        view.back()
+       // view.finish()
     }
 
     override fun getEventTei(): String {

@@ -29,7 +29,7 @@ import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.tracker.events.CreateEventUseCaseRepository
-import org.dhis2.usescases.events.EventInfoProvider
+import org.dhis2.usescases.enrollment.events.EventInfoProvider
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2

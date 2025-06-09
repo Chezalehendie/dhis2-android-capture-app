@@ -4,7 +4,6 @@ import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentConfigurations
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-
 interface EnrollmentView : AbstractActivityContracts.View {
 
     fun setAccess(access: Boolean?)
@@ -24,4 +23,5 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun showDateEditionWarning(message: String?)
     fun updateDatastoreConfigs(autoEnrollmentsConfigurations: AutoEnrollmentConfigurations.Companion)
     fun updateAutoEnrollmentConfigurations(autoEnrollmentConfigurations: AutoEnrollmentConfigurations.Companion)
+    fun loadAutoEnrollmentConfigurations(autoEnrollmentConfigurations: AutoEnrollmentConfigurations.Companion)
 }

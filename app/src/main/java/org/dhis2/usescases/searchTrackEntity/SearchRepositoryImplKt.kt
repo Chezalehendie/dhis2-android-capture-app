@@ -21,7 +21,7 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.ui.toColor
-import org.dhis2.usescases.events.EventInfoProvider
+import org.dhis2.usescases.enrollment.events.EventInfoProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
