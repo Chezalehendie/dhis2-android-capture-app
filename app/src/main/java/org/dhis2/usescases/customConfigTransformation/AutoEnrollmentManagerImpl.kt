@@ -21,6 +21,26 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
             .toFlowable()
     }
 
+    override fun getTrackedEntityDataValuesByProgramStageAndEnrollment(
+        programStageUid: String,
+        enrollmentUid: String
+    ): Flowable<List<TrackedEntityDataValue>> {
+
+        val events = d2.eventModule().events()
+            .byEnrollmentUid().eq(enrollmentUid)
+            .byProgramStageUid().eq(programStageUid)
+            .blockingGet()
+
+        return if (events.isNotEmpty()) {
+            d2.trackedEntityModule().trackedEntityDataValues()
+                .byEvent().`in`(events.map { it.uid() })
+                .get()
+                .toFlowable()
+        } else {
+            Flowable.empty()
+        }
+    }
+
     override fun getCustomConfigurations(): Flowable<AutoEnrollmentConfigurations> {
         val configEntry = d2.dataStoreModule()
             .dataStore()

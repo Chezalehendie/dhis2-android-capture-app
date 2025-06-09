@@ -51,7 +51,7 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val dateEditionWarningHandler: DateEditionWarningHandler,
-    private val autoEnrollmentConfigurations: AutoEnrollmentConfigurations // Injected DatastoreConfigs
+    private val autoEnrollmentConfigurations: AutoEnrollmentConfigurations // injected auto enrollments configs
 ) {
 
     private val disposable = CompositeDisposable()
@@ -259,7 +259,7 @@ class EnrollmentPresenterImpl(
             return minStartReportEventDate.before(currentDate) || minStartReportEventDate == currentDate
         } catch (e: Exception) {
             Timber.d(e.message)
-            true
+            true 
         }
     }
 
