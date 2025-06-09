@@ -40,6 +40,8 @@ import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
+import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentManager
+import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentManagerImpl
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -161,6 +163,7 @@ class EnrollmentModule(
         eventCollectionRepository: EventCollectionRepository,
         teiAttributesProvider: TeiAttributesProvider,
         dateEditionWarningHandler: DateEditionWarningHandler,
+        autoEnrollmentConfigurations: AutoEnrollmentManager,
 
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
@@ -176,7 +179,7 @@ class EnrollmentModule(
             eventCollectionRepository,
             teiAttributesProvider,
             dateEditionWarningHandler,
-            //autoEnrollmentConfigurations = TODO(),
+            autoEnrollmentConfigurations
         )
     }
 
@@ -256,5 +259,11 @@ class EnrollmentModule(
     @PerActivity
     fun providesTeiAttributesProvider(d2: D2): TeiAttributesProvider {
         return TeiAttributesProvider(d2)
+    }
+
+    @Provides
+    @PerActivity
+    fun providesAutoEnrollmentManager(d2: D2): AutoEnrollmentManager {
+        return AutoEnrollmentManagerImpl(d2)
     }
 }

@@ -5,12 +5,13 @@ import org.dhis2.usescases.customConfigTransformation.networkModels.SourceProgra
 data class SourceProgramStage(
     val sourceProgramStage: String,
     val sourceProgramStageDataElements: List<SourceProgramStageDataElement>
-){
-    fun stageUid(): String {
-        return sourceProgramStage;
-    }
-
-    fun stageDataElements(): List<SourceProgramStageDataElement>{
-        return sourceProgramStageDataElements;
-    }
-}
+)
+//{
+//    fun stageUid(): String {
+//        return sourceProgramStage;
+//    }
+//
+//    fun stageDataElements(): List<SourceProgramStageDataElement>{
+//        return sourceProgramStageDataElements;
+//    }
+//}

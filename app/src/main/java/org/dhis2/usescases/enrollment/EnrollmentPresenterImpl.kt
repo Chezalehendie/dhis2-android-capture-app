@@ -1,5 +1,7 @@
 package org.dhis2.usescases.enrollment
 
+import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
@@ -35,6 +37,7 @@ import timber.log.Timber
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
 import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentConfigurations
+import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentManager
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -51,7 +54,7 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val dateEditionWarningHandler: DateEditionWarningHandler,
-    //private val autoEnrollmentConfigurations: AutoEnrollmentConfigurations // injected auto enrollments configs
+    private val autoEnrollmentConfigurations: AutoEnrollmentManager, // injected auto enrollments configs
 ) {
 
     private val disposable = CompositeDisposable()
@@ -121,6 +124,8 @@ class EnrollmentPresenterImpl(
                     { Timber.tag(TAG).e(it) },
                 ),
         )
+
+
     }
 
     fun subscribeToBackButton() {
@@ -135,21 +140,34 @@ class EnrollmentPresenterImpl(
     }
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
+//     disposable.add(
+//
+//     )
+
+
+
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> {
                 matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
                 disposable.add(
-                    enrollmentFormRepository.generateEvents()
-                        .defaultSubscribe(
-                            schedulerProvider,
-                            {
-                                it.second?.let { eventUid ->
-                                    view.openEvent(eventUid)
+                    Single.zip(
+                        autoEnrollmentConfigurations.getCustomConfigurations(),
+                        enrollmentFormRepository.generateEvents(),
+                        ::CustomConfigAndEvents
+                ).defaultSubscribe(
+                    schedulerProvider,
+                        onSuccess = {custoEndConfig->
+                           var enrollmentConfig = custoEndConfig.customConfigs
+                            val eventAndEnronment = custoEndConfig.eventAndEnrollment
 
-                                } ?: view.openDashboard(it.first)
-                            },
-                            { Timber.tag(TAG).e(it) },
-                        ),
+                           eventAndEnronment.second?.let { view.openEvent(it) }
+                               ?: view.openDashboard(eventAndEnronment.first)
+                        },
+                       onError =  {
+
+                        }
+
+                )
                 )
             }
 

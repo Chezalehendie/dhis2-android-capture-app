@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import kotlin.collections.map
@@ -24,7 +26,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
     override fun getTrackedEntityDataValuesByProgramStageAndEnrollment(
         programStageUid: String,
         enrollmentUid: String
-    ): Flowable<List<TrackedEntityDataValue>> {
+    ): Observable<List<TrackedEntityDataValue>> {
 
         val events = d2.eventModule().events()
             .byEnrollmentUid().eq(enrollmentUid)
@@ -35,13 +37,13 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
             d2.trackedEntityModule().trackedEntityDataValues()
                 .byEvent().`in`(events.map { it.uid() })
                 .get()
-                .toFlowable()
+                .toObservable()
         } else {
-            Flowable.empty()
+            Observable.empty()
         }
     }
 
-    override fun getCustomConfigurations(): Flowable<AutoEnrollmentConfigurations> {
+    override fun getCustomConfigurations(): Single<AutoEnrollmentConfigurations> {
         val configEntry = d2.dataStoreModule()
             .dataStore()
             .byNamespace().eq("programMapping")
@@ -51,14 +53,14 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
         return if (configEntry != null) {
             d2.dataStoreModule().dataStore().byNamespace().eq("programMapping")
                 .byKey().eq("mapping_rules").one().get()
-                .toFlowable().map {
+                .map {
                     Gson().fromJson(
                         it.value(),
                         AutoEnrollmentConfigurations::class.java
                     )
                 }
         } else {
-            Flowable.empty()
+            Single.never()
         }
     }
 }
