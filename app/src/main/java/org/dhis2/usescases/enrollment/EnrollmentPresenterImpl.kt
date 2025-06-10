@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import timber.log.Timber
 import java.util.Calendar.DAY_OF_YEAR
@@ -54,7 +55,7 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val dateEditionWarningHandler: DateEditionWarningHandler,
-    private val autoEnrollmentConfigurations: AutoEnrollmentManager, // injected auto enrollments configs
+    private val autoEnrollmentConfigurations: AutoEnrollmentManager,
 ) {
 
     private val disposable = CompositeDisposable()
@@ -124,8 +125,6 @@ class EnrollmentPresenterImpl(
                     { Timber.tag(TAG).e(it) },
                 ),
         )
-
-
     }
 
     fun subscribeToBackButton() {
@@ -140,13 +139,6 @@ class EnrollmentPresenterImpl(
     }
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
-
-        //get current tei
-
-        //find latest enrollment for a tei from source program
-
-        
-
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> {
                 matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
@@ -157,42 +149,62 @@ class EnrollmentPresenterImpl(
                         ::CustomConfigAndEvents
                     ).defaultSubscribe(
                         schedulerProvider,
-                        onSuccess = { customConfigsAndEvents ->
+                        onSuccess = { customConfigsAndEvents: CustomConfigAndEvents ->
                             val enrollmentConfig = customConfigsAndEvents.enrollmentConfig
                             val eventAndEnrollmentIds = customConfigsAndEvents.eventAndEnrollmentIds
 
                             val enrollmentId = eventAndEnrollmentIds.first
 
-                            val mappingRule = enrollmentConfig.mappingRules.find {
-                                it.targetProgram == d2.enrollmentModule().enrollments()
+                            val mappingRule = enrollmentConfig.mappingRules.find { rule ->
+                                rule.targetProgram == d2.enrollmentModule().enrollments()
                                     .uid(enrollmentId).blockingGet()?.program()
                             }
 
+                            val dataElementUid1 = "IFqbQRlOaO7"
+                            val dataElementUid2 = "R7RacPOKCqh"
 
-                            //Get current tei
                             val tei = d2.enrollmentModule().enrollments()
                                 .uid(enrollmentId).blockingGet()?.trackedEntityInstance()
-
-                            // get current org unit
 
                             val orgUnit = d2.enrollmentModule().enrollments()
                                 .uid(enrollmentId)
                                 .blockingGet()
                                 ?.organisationUnit()
-                            //find latest enrollment for a tei from source program
+
                             val teiFromSource = d2.enrollmentModule()
                                 .enrollments().byProgram()
                                 .eq(mappingRule?.sourceProgram).byTrackedEntityInstance()
                                 .eq(tei).orderByEnrollmentDate(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet().last()
 
-                            val dataValuesGroupedByPrograStages =
-                                mappingRule?.sourceProgramStages?.map {
-                                    autoEnrollmentConfigurations.getTrackedEntityDataValuesByProgramStageAndEnrollment(
-                                        it.sourceProgramStage, teiFromSource.uid()
-                                    ).filter { it.dataElement()=="" }
-                                }
+                            val dataValuesGroupedByProgramStages: List<Pair<String, List<TrackedEntityDataValue>>> =
+                                teiFromSource?.let { sourceTei ->
+                                    mappingRule?.sourceProgramStages?.map { programStage ->
+                                        val allDataValues = autoEnrollmentConfigurations.getTrackedEntityDataValuesByProgramStageAndEnrollment(
+                                            programStage.sourceProgramStage, sourceTei.uid()
+                                        )
+                                        val filteredValues = allDataValues.filter { dataValue ->
+                                            dataValue.dataElement() == dataElementUid1 ||
+                                                    dataValue.dataElement() == dataElementUid2
+                                        }
+                                        Pair(programStage.sourceProgramStage, filteredValues)
+                                    }
+                                } ?: emptyList()
 
+                            dataValuesGroupedByProgramStages.forEach { (programStageUid: String, dataValues: List<TrackedEntityDataValue>) ->
+                                Timber.d("program stage: $programStageUid")
+                                dataValues.forEach { dataValue: TrackedEntityDataValue ->
+                                    val uid = dataValue.dataElement()
+                                    val value = dataValue.value()
+                                    Timber.d("Data Element: $uid, Value: $value")
+
+                                    if (uid == dataElementUid1) {
+                                        // Do something with the first data element's value
+                                    } else if (uid == dataElementUid2) {
+                                        // Do something with the second data element's value
+                                    }
+                                }
+                            }
 
                             //create event projection
                             val ep = EventCreateProjection.create(
@@ -200,28 +212,24 @@ class EnrollmentPresenterImpl(
                             )
 
                             //create event and return an id
-                          val eventId =  d2.eventModule()
+                            val eventId = d2.eventModule()
                                 .events()
                                 .blockingAdd(
                                     ep
                                 )
 
-                           //Pass the actual value for one data element
+                            //Pass the actual value for one data element
                             val passvalues = d2.trackedEntityModule()
                                 .trackedEntityDataValues()
                                 .value("", "")
                                 .blockingSet("")
 
-
-
-
                             eventAndEnrollmentIds.second?.let { view.openEvent(it) }
                                 ?: view.openDashboard(eventAndEnrollmentIds.first)
                         },
-                        onError = {
-                            Timber.tag("CHECK_ENROLLMENNT").e(it)
+                        onError = { error ->
+                            Timber.tag("CHECK_ENROLLMENNT").e(error)
                         }
-
                     )
                 )
             }
@@ -337,17 +345,4 @@ class EnrollmentPresenterImpl(
             true
         }
     }
-
-//    fun loadAutoEnrollmentConfigurations() {
-//        val autoEnrollmentConfigurations = autoEnrollmentConfigurations.loadAutoEnrollmentConfigurations()
-//        if (true) {
-//            view.updateAutoEnrollmentConfigurations(AutoEnrollmentConfigurations)
-//        } else {
-//            Timber.e("Failed to load AutoEnrollmentConfigurations")
-//        }
-//    }
 }
-
-//private fun AutoEnrollmentConfigurations.loadAutoEnrollmentConfigurations() {
-//
-//}
