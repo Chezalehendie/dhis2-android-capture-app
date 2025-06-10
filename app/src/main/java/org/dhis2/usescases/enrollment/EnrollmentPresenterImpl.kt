@@ -1,6 +1,5 @@
 package org.dhis2.usescases.enrollment
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
@@ -16,11 +15,13 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.form.model.RowAction
+import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentManager
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -28,6 +29,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.EventCreateProjection
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.Program
@@ -36,8 +38,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import timber.log.Timber
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
-import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentConfigurations
-import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentManager
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -154,12 +154,66 @@ class EnrollmentPresenterImpl(
                         onSuccess = { customConfigsAndEvents ->
                             val enrollmentConfig = customConfigsAndEvents.enrollmentConfig
                             val eventAndEnrollmentIds = customConfigsAndEvents.eventAndEnrollmentIds
-                            Timber.tag("CHECK_ENROLLMENNT").d(enrollmentConfig.mappingRules.toString())
+
+                            val enrollmentId = eventAndEnrollmentIds.first
+
+                            val mappingRule = enrollmentConfig.mappingRules.find {
+                                it.targetProgram == d2.enrollmentModule().enrollments()
+                                    .uid(enrollmentId).blockingGet()?.program()
+                            }
+
+
+                            //Get current tei
+                            val tei = d2.enrollmentModule().enrollments()
+                                .uid(enrollmentId).blockingGet()?.trackedEntityInstance()
+
+                            // get current org unit
+
+                            val orgUnit = d2.enrollmentModule().enrollments()
+                                .uid(enrollmentId)
+                                .blockingGet()
+                                ?.organisationUnit()
+                            //find latest enrollment for a tei from source program
+                            val teiFromSource = d2.enrollmentModule()
+                                .enrollments().byProgram()
+                                .eq(mappingRule?.sourceProgram).byTrackedEntityInstance()
+                                .eq(tei).orderByEnrollmentDate(RepositoryScope.OrderByDirection.ASC)
+                                .blockingGet().last()
+
+                            val dataValuesGroupedByPrograStages =
+                                mappingRule?.sourceProgramStages?.map {
+                                    autoEnrollmentConfigurations.getTrackedEntityDataValuesByProgramStageAndEnrollment(
+                                        it.sourceProgramStage, teiFromSource.uid()
+                                    ).filter { it.dataElement()=="" }
+                                }
+
+
+                            //create event projection
+                            val ep = EventCreateProjection.create(
+                                "", "", "", "", ""
+                            )
+
+                            //create event and return an id
+                          val eventId =  d2.eventModule()
+                                .events()
+                                .blockingAdd(
+                                    ep
+                                )
+
+                           //Pass the actual value for one data element
+                            val passvalues = d2.trackedEntityModule()
+                                .trackedEntityDataValues()
+                                .value("", "")
+                                .blockingSet("")
+
+
+
+
                             eventAndEnrollmentIds.second?.let { view.openEvent(it) }
                                 ?: view.openDashboard(eventAndEnrollmentIds.first)
                         },
                         onError = {
-Timber.tag("CHECK_ENROLLMENNT").e(it)
+                            Timber.tag("CHECK_ENROLLMENNT").e(it)
                         }
 
                     )

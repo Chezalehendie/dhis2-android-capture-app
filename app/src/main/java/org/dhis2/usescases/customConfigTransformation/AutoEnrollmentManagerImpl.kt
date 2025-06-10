@@ -29,20 +29,19 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
     override fun getTrackedEntityDataValuesByProgramStageAndEnrollment(
         programStageUid: String,
         enrollmentUid: String
-    ): Observable<List<TrackedEntityDataValue>> {
+    ): List<TrackedEntityDataValue>{
 
         val events = d2.eventModule().events()
             .byEnrollmentUid().eq(enrollmentUid)
-            .byProgramStageUid().eq(programStageUid)
+            .byProgramStageUid().`in`(programStageUid)
             .blockingGet()
 
         return if (events.isNotEmpty()) {
             d2.trackedEntityModule().trackedEntityDataValues()
                 .byEvent().`in`(events.map { it.uid() })
-                .get()
-                .toObservable()
+                .blockingGet()
         } else {
-            Observable.empty()
+            listOf()
         }
     }
 
@@ -57,11 +56,9 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
             d2.dataStoreModule().dataStore().byNamespace().eq("programMapping")
                 .byKey().eq("mapping_rules").one().get()
                 .map {
-
-                    //TODO: Implement a proper deserialiser from JsonWrapper that gets saved in data store, Its not jus a string as it used to be.  It is returned as an object
-                    // Look at String split and play around with it.value() to get the actual Json which can then be passed to Gson().fromJson
+                    val formattedJson = it.value()?.split("json=")[1]?.split(")")[0]
                     Gson().fromJson(
-                        it.value(),
+                        formattedJson,
                         AutoEnrollmentConfigurations::class.java
                     )
                 }
