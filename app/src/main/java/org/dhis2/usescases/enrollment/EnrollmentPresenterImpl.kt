@@ -141,6 +141,12 @@ class EnrollmentPresenterImpl(
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
 
+        //get current tei
+
+        //find latest enrollment for a tei from source program
+
+        
+
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> {
                 matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
