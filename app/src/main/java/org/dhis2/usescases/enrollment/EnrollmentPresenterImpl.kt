@@ -179,6 +179,7 @@ class EnrollmentPresenterImpl(
                                 .uid(enrollmentId)
                                 .blockingGet()
                                 ?.organisationUnit()
+
                             //find latest enrollment for a tei from source program
                             val teiFromSource = d2.enrollmentModule()
                                 .enrollments().byProgram()
@@ -186,7 +187,7 @@ class EnrollmentPresenterImpl(
                                 .eq(tei).orderByEnrollmentDate(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet().last()
 
-                            val dataValuesGroupedByPrograStages =
+                            val dataValuesGroupedByProgramStages =
                                 mappingRule?.sourceProgramStages?.map {
                                     autoEnrollmentConfigurations.getTrackedEntityDataValuesByProgramStageAndEnrollment(
                                         it.sourceProgramStage, teiFromSource.uid()
@@ -196,7 +197,7 @@ class EnrollmentPresenterImpl(
 
                             //create event projection
                             val ep = EventCreateProjection.create(
-                                "", "", "", "", ""
+                                "", "", "", "$orgUnit", ""
                             )
 
                             //create event and return an id

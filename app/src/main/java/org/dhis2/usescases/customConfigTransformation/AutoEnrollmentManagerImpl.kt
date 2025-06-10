@@ -12,7 +12,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import kotlin.collections.map
 import org.dhis2.usescases.customConfigTransformation.networkModels.SourceProgramStageDataElement
-import org.dhis2.usescases.customConfigTransformation.networkModels.deserializeJsonWrapper
 import timber.log.Timber
 
 class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
