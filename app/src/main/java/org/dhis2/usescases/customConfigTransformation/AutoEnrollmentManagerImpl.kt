@@ -30,20 +30,19 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
     override fun getTrackedEntityDataValuesByProgramStageAndEnrollment(
         programStageUid: String,
         enrollmentUid: String
-    ): Observable<List<TrackedEntityDataValue>> {
+    ): List<TrackedEntityDataValue>{
 
         val events = d2.eventModule().events()
             .byEnrollmentUid().eq(enrollmentUid)
-            .byProgramStageUid().eq(programStageUid)
+            .byProgramStageUid().`in`(programStageUid)
             .blockingGet()
 
         return if (events.isNotEmpty()) {
             d2.trackedEntityModule().trackedEntityDataValues()
                 .byEvent().`in`(events.map { it.uid() })
-                .get()
-                .toObservable()
+                .blockingGet()
         } else {
-            Observable.empty()
+            listOf()
         }
     }
 
