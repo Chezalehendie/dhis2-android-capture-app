@@ -38,6 +38,7 @@ import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
 import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentConfigurations
 import org.dhis2.usescases.customConfigTransformation.AutoEnrollmentManager
+import org.hisp.dhis.android.core.event.EventCreateProjection
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -154,6 +155,45 @@ class EnrollmentPresenterImpl(
                         onSuccess = { customConfigsAndEvents ->
                             val enrollmentConfig = customConfigsAndEvents.enrollmentConfig
                             val eventAndEnrollmentIds = customConfigsAndEvents.eventAndEnrollmentIds
+                            val enrolllmentId = eventAndEnrollmentIds.first
+                            val mappingRule == d2.enrollmentModule().enrollments()
+                                .uid(enrolllmentId)
+                                .blockingGet()
+                                ?.mappingRule()
+
+                            val tei = d2.enrollmentModule().enrollments()
+                                .uid(enrolllmentId)
+                                .blockingGet()
+                                ?.trackedEntityInstance()
+
+                            val teiFromSource=d2.enrollmentModule()
+                                .enrollments().byProgram()
+                                .eq(mappingRule?.sourceProgram).byTrackedEntityInstance()
+                                 .eq(tei).orderByEnrollmentDate(RepositoryScope.OrderDirection.ASC)
+                                .blockingGet().last()
+
+                             val dataValuesGroupedByProgramStages = mappingRule.sourceProgramStages?.map{autoEnrollmentConfigurations.getTrackedEntityDataValuesByProgramStageAndEnrollment(
+                                 it.sourceProgramStage.teiFromSource.uid()
+                             )}.filter {it.dataElement()}
+
+
+                            val ep = EventCreateProjection.create(
+
+                            )
+
+                          val eventId =  d2.eventModule()
+                               .events()
+                               .blockingAdd(
+                                   ep
+                               )
+                            val passValues = d2.trackedEntityModule()
+                                .trackedEntityDataValues()
+                                .value("", "")
+                                .blockingGet("")
+
+
+
+
                             Timber.tag("CHECK_ENROLLMENNT").d(enrollmentConfig.mappingRules.toString())
                             eventAndEnrollmentIds.second?.let { view.openEvent(it) }
                                 ?: view.openDashboard(eventAndEnrollmentIds.first)
