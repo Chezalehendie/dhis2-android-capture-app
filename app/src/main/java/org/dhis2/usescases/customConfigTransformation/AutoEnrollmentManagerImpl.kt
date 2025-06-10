@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import kotlin.collections.map
 import org.dhis2.usescases.customConfigTransformation.networkModels.SourceProgramStageDataElement
+import org.dhis2.usescases.customConfigTransformation.networkModels.deserializeJsonWrapper
 import timber.log.Timber
 
 class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
@@ -58,10 +59,10 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
                 .byKey().eq("mapping_rules").one().get()
                 .map {
 
-                    //TODO: Implement a proper deserialiser from JsonWrapper that gets saved in data store, Its not jus a string as it used to be.  It is returned as an object
-                    // Look at String split and play around with it.value() to get the actual Json which can then be passed to Gson().fromJson
+                    val formattedJson = it.value()?.split("json=")[1]?.split(")")[0]
+
                     Gson().fromJson(
-                        it.value(),
+                        formattedJson,
                         AutoEnrollmentConfigurations::class.java
                     )
                 }
