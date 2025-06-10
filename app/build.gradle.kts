@@ -1,5 +1,6 @@
 import com.android.build.api.variant.impl.VariantOutputImpl
 import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
@@ -253,6 +254,8 @@ dependencies {
     implementation(project(":tracker"))
     implementation(project(":aggregates"))
     implementation(project(":commonskmm"))
+    implementation(libs.kotlinx.serialization.json.v160)
+
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)

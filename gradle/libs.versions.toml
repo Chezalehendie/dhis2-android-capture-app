@@ -1,5 +1,6 @@
 [versions]
 kotlinxDatetime = "0.6.2"
+kotlinxSerializationJson = "1.6.0"
 sdk = "35"
 minSdk = "21"
 vCode = "143"
@@ -147,6 +148,7 @@ google-material = { group = "com.google.android.material", name = "material", ve
 google-material3-themeadapter = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "themeAdapter" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinx-serialization-json-v160 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 network-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 dates-jodatime = { group = "joda-time", name = "joda-time", version.ref = "jodatime" }
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "hilt" }

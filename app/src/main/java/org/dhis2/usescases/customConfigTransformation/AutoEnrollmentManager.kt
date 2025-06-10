@@ -14,5 +14,5 @@ interface AutoEnrollmentManager {
     fun getTrackedEntityDataValuesByProgramStageAndEnrollment(
         programStageUid: String,
         enrollmentUid: String
-    ): Observable<List<TrackedEntityDataValue>>
+    ): List<TrackedEntityDataValue>
 }
