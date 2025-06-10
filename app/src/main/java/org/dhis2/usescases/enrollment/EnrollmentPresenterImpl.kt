@@ -142,10 +142,21 @@ class EnrollmentPresenterImpl(
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
 
         //get current tei
+        val tei = d2.enrollmentModule().enrollments()
+
+        //get currrent org unit
 
         //find latest enrollment for a tei from source program
 
-        
+//grp program stages
+        //val datavalues=mapping rule?.sourceprogramstage.map{} autpenrollmentconfigurations.gettrackedentityevntsandenrollments
+        //it.sourceprogramstage, teifromsource.uid()).blockinglatest()
+
+        //val ep = eventcreateprojection.create("","", "", "", "", "", "", "", "", "", "", "")d2.eventmodule().evnts().blockingadd(ep)
+
+        //val passvalues = d2.trackedEntityModule().trackedEntityDataValues()
+
+           // .blockingset()
 
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> {
