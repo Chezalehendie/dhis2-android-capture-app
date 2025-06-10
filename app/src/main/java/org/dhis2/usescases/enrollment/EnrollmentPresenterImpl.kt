@@ -54,7 +54,7 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val dateEditionWarningHandler: DateEditionWarningHandler,
-    private val autoEnrollmentConfigurations: AutoEnrollmentManager, // injected auto enrollments configs
+    private val autoEnrollmentManager: AutoEnrollmentManager, // injected auto enrollments configs
 ) {
 
     private val disposable = CompositeDisposable()
@@ -141,18 +141,12 @@ class EnrollmentPresenterImpl(
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
 
-        //get current tei
-
-        //find latest enrollment for a tei from source program
-
-        
-
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> {
                 matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
                 disposable.add(
                     Single.zip(
-                        autoEnrollmentConfigurations.getCustomConfigurations(),
+                        autoEnrollmentManager.getCustomConfigurations(),
                         enrollmentFormRepository.generateEvents(),
                         ::CustomConfigAndEvents
                     ).defaultSubscribe(
@@ -164,17 +158,22 @@ class EnrollmentPresenterImpl(
                             val enrollmentId = eventAndEnrollmentIds.first
 
                             val mappingRule = enrollmentConfig.mappingRules.find {
-                                it.targetProgram == d2.enrollmentModule().enrollments()
-                                    .uid(enrollmentId).blockingGet()?.program()
+                                it.targetProgram == d2.enrollmentModule()
+                                    .enrollments()
+                                    .uid(enrollmentId)
+                                    .blockingGet()?.program()
                             }
 
+                            //get target program stage id
+                            val targetProgramStageUid = mappingRule?.targetProgramStages?.get(0)?.targetProgramStage
 
                             //Get current tei
-                            val tei = d2.enrollmentModule().enrollments()
-                                .uid(enrollmentId).blockingGet()?.trackedEntityInstance()
+                            val tei = d2.enrollmentModule()
+                                .enrollments()
+                                .uid(enrollmentId)
+                                .blockingGet()?.trackedEntityInstance()
 
                             // get current org unit
-
                             val orgUnit = d2.enrollmentModule().enrollments()
                                 .uid(enrollmentId)
                                 .blockingGet()
@@ -187,17 +186,23 @@ class EnrollmentPresenterImpl(
                                 .eq(tei).orderByEnrollmentDate(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet().last()
 
+                            //source data elements
+                            val sourceDataElements = mappingRule?.sourceProgramStages?.get(1)?.sourceProgramStageDataElements
+
                             val dataValuesGroupedByProgramStages =
                                 mappingRule?.sourceProgramStages?.map {
-                                    autoEnrollmentConfigurations.getTrackedEntityDataValuesByProgramStageAndEnrollment(
+                                    autoEnrollmentManager.getTrackedEntityDataValuesByProgramStageAndEnrollment(
                                         it.sourceProgramStage, teiFromSource.uid()
-                                    ).filter { it.dataElement()=="" }
+                                    ).filter { entry ->
+                                        entry.dataElement()=="${sourceDataElements?.get(0)?.sourceDataElement}"
+                                                || entry.dataElement()=="${sourceDataElements?.get(1)?.sourceDataElement}"
+                                    }
                                 }
 
 
                             //create event projection
                             val ep = EventCreateProjection.create(
-                                "", "", "", "$orgUnit", ""
+                                "$teiFromSource", "${mappingRule?.targetProgram}", "$targetProgramStageUid", "$orgUnit", ""
                             )
 
                             //create event and return an id
@@ -207,14 +212,21 @@ class EnrollmentPresenterImpl(
                                     ep
                                 )
 
+                            // Transfer data values from source to new event
+                            dataValuesGroupedByProgramStages?.flatten()?.forEach { dataValue ->
+                                dataValue.dataElement()?.let {
+                                    d2.trackedEntityModule()
+                                        .trackedEntityDataValues()
+                                        .value(eventId, it)
+                                        .blockingSet(dataValue.value())
+                                }
+                            }
+
                            //Pass the actual value for one data element
-                            val passvalues = d2.trackedEntityModule()
-                                .trackedEntityDataValues()
-                                .value("", "")
-                                .blockingSet("")
-
-
-
+//                            val passvalues = d2.trackedEntityModule()
+//                                .trackedEntityDataValues()
+//                                .value("$eventId", "")
+//                                .blockingSet("")
 
                             eventAndEnrollmentIds.second?.let { view.openEvent(it) }
                                 ?: view.openDashboard(eventAndEnrollmentIds.first)

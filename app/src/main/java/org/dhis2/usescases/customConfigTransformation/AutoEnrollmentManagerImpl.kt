@@ -57,7 +57,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
                 .byKey().eq("mapping_rules").one().get()
                 .map {
 
-                    val formattedJson = it.value()?.split("json=")[1]?.split(")")[0]
+                    val formattedJson = it.value()?.split("json=")?.get(1)?.split(")")?.get(0)
 
                     Gson().fromJson(
                         formattedJson,
