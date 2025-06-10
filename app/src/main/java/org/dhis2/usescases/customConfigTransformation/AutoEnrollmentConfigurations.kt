@@ -5,11 +5,4 @@ import kotlin.collections.List
 
 data class AutoEnrollmentConfigurations(
     val mappingRules: List<MappingRule>
-) {
-    companion object {
-        fun createDefaultEnrollmentConfigObject() {
-
-
-        }
-    }
-}
+)
