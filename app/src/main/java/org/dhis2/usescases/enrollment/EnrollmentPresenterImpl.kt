@@ -236,12 +236,16 @@ class EnrollmentPresenterImpl(
                                     //Transfer data values from source to new event
                                     dataValuesGroupedByProgramStages.flatten().forEach { dataValue ->
                                         dataValue.dataElement()?.let {
-                                            d2.trackedEntityModule()
-                                                .trackedEntityDataValues()
-                                                .value(eventId,
-                                                    dataElementUids?.get(it.indexOf(dataValue.dataElement()!!)) ?: ""
-                                                )
-                                                .blockingSet(dataValue.value())
+                                            dataElementUids?.get(it.indexOf(dataValue.dataElement()!!))
+                                                ?.let { it1 ->
+                                                    d2.trackedEntityModule()
+                                                        .trackedEntityDataValues()
+                                                        .value(eventId,
+                                                            it1
+                                                        )
+                                                        .blockingSet(dataValue.value())
+                                                }
+                                            Timber.tag("CHECK_ENROLLMENT").d("Successfully set data value data element: $it, data value: ${dataValue.value()}")
                                         }
                                     }
                                 } catch (e: Exception) {
