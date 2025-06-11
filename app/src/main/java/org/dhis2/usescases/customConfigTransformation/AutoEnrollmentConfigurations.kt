@@ -1,5 +1,4 @@
 package org.dhis2.usescases.customConfigTransformation
-
 import org.dhis2.usescases.customConfigTransformation.networkModels.MappingRule
 import kotlin.collections.List
 
