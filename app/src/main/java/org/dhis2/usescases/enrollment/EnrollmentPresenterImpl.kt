@@ -214,8 +214,7 @@ class EnrollmentPresenterImpl(
                                                     || entry.dataElement()=="${sourceDataElementsUids?.get(1)}"
                                         }
                                     }
-                                Timber.tag("CHECK_ENROLLMENT").d( "Data Values Grouped By Program Stages: ${dataValuesGroupedByProgramStages.toString()}")
-
+                                //Timber.tag("CHECK_ENROLLMENT").d( "Data Values Grouped By Program Stages: ${dataValuesGroupedByProgramStages.toString()}")
 
                                 //create event projection
                                 val ep = EventCreateProjection.create(
@@ -225,28 +224,29 @@ class EnrollmentPresenterImpl(
                                     orgUnit,
                                     null
                                 )
-                                Timber.tag("CHECK_ENROLLMENT").d( "Event Projection: ${ep.toString()}")
+                                //Timber.tag("CHECK_ENROLLMENT").d( "Event Projection: ${ep.toString()}")
 
                                 val eventId = d2.eventModule().events().blockingAdd(ep)
                                 Timber.tag("CHECK_ENROLLMENT").d("Successfully created event: $eventId")
 
-
                                 try {
-
                                     //Transfer data values from source to new event
-                                    dataValuesGroupedByProgramStages.flatten().forEach { dataValue ->
+                                    dataValuesGroupedByProgramStages.flatten().forEachIndexed { index, dataValue ->
                                         dataValue.dataElement()?.let {
-                                            dataElementUids?.get(it.indexOf(dataValue.dataElement()!!))
-                                                ?.let { it1 ->
-                                                    d2.trackedEntityModule()
-                                                        .trackedEntityDataValues()
-                                                        .value(eventId,
-                                                            it1
-                                                        )
-                                                        .blockingSet(dataValue.value())
-                                                }
+                                            dataElementUids?.getOrNull(index)?.let { dataElementUid ->
+                                                d2.trackedEntityModule()
+                                                    .trackedEntityDataValues()
+                                                    .value(eventId, dataElementUid)
+                                                    .blockingSet(dataValue.value())
+                                            }
                                             Timber.tag("CHECK_ENROLLMENT").d("Successfully set data value data element: $it, data value: ${dataValue.value()}")
                                         }
+                                    }
+                                    if(eventId.isNotEmpty()){
+                                        view.openEvent(eventId)
+                                    }
+                                    else{
+                                        view.openDashboard(eventAndEnrollmentIds.first)
                                     }
                                 } catch (e: Exception) {
                                     if (e is D2Error) {
@@ -255,9 +255,6 @@ class EnrollmentPresenterImpl(
                                         Timber.tag("CHECK_ENROLLMENT").e(e, "Failed to create event")
                                     }
                                 }
-
-                                eventAndEnrollmentIds.second?.let { view.openEvent(it) }
-                                    ?: view.openDashboard(eventAndEnrollmentIds.first)
                             }
                             else{
                                 eventAndEnrollmentIds.second?.let { view.openEvent(it) }
