@@ -36,6 +36,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import timber.log.Timber
+import java.util.Calendar
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
 
@@ -217,9 +218,11 @@ class EnrollmentPresenterImpl(
                                 //Timber.tag("CHECK_ENROLLMENT").d( "Data Values Grouped By Program Stages: ${dataValuesGroupedByProgramStages.toString()}")
 
                                 //create event projection
+
+                                //String enrollment, String program, String programStage, String organisationUnit, String attributeOptionCombo
                                 val ep = EventCreateProjection.create(
-                                    teiFromSource.uid(),
-                                    mappingRule.sourceProgram,
+                                    enrollmentId,
+                                    mappingRule.targetProgram,
                                     mappingRule.targetProgramStages.firstOrNull()?.targetProgramStage,
                                     orgUnit,
                                     null
@@ -227,8 +230,16 @@ class EnrollmentPresenterImpl(
                                 //Timber.tag("CHECK_ENROLLMENT").d( "Event Projection: ${ep.toString()}")
 
                                 val eventId = d2.eventModule().events().blockingAdd(ep)
-                                Timber.tag("CHECK_ENROLLMENT").d("Successfully created event: $eventId")
 
+                                val cal = Calendar.getInstance()
+                                cal[Calendar.HOUR_OF_DAY] = 0
+                                cal[Calendar.MINUTE] = 0
+                                cal[Calendar.SECOND] = 0
+                                cal[Calendar.MILLISECOND] = 0
+
+                                d2.eventModule().events().uid(eventId).setEventDate(cal.time)
+                                Timber.tag("CHECK_ENROLLMENT").d("Successfully created event: ${ d2.eventModule().events().uid(eventId).blockingGet()
+                                    ?.status()}")
                                 try {
                                     //Transfer data values from source to new event
                                     dataValuesGroupedByProgramStages.flatten().forEachIndexed { index, dataValue ->
@@ -238,16 +249,18 @@ class EnrollmentPresenterImpl(
                                                     .trackedEntityDataValues()
                                                     .value(eventId, dataElementUid)
                                                     .blockingSet(dataValue.value())
+
+                                                Timber.tag("CHECK_ENROLLMENT").d("Success! Source data element: $it, Target Data Element${dataElementUid}, data value: ${dataValue.value()}")
                                             }
-                                            Timber.tag("CHECK_ENROLLMENT").d("Successfully set data value data element: $it, data value: ${dataValue.value()}")
+                                            //Timber.tag("CHECK_ENROLLMENT").d("Success! Source data element: $it, Tagert Data Element${dataElementUids}, data value: ${dataValue.value()}")
                                         }
                                     }
-                                    if(eventId.isNotEmpty()){
-                                        view.openEvent(eventId)
-                                    }
-                                    else{
-                                        view.openDashboard(eventAndEnrollmentIds.first)
-                                    }
+//                                    if(eventId.isNotEmpty()){
+//                                        view.openEvent(eventId)
+//                                    }
+//                                    else{
+//                                        view.openDashboard(eventAndEnrollmentIds.first)
+//                                    }
                                 } catch (e: Exception) {
                                     if (e is D2Error) {
                                         Timber.tag("CHECK_ENROLLMENT").e(e.toString())
@@ -255,6 +268,8 @@ class EnrollmentPresenterImpl(
                                         Timber.tag("CHECK_ENROLLMENT").e(e, "Failed to create event")
                                     }
                                 }
+                                eventAndEnrollmentIds.second?.let { view.openEvent(it) }
+                                    ?: view.openDashboard(eventAndEnrollmentIds.first)
                             }
                             else{
                                 eventAndEnrollmentIds.second?.let { view.openEvent(it) }
