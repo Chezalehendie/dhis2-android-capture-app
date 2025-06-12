@@ -142,7 +142,7 @@ class EnrollmentPresenterImpl(
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
 
         //get current tei
-        val tei = d2.enrollmentModule().enrollments()
+        //val tei = d2.enrollmentModule().enrollments()
 
         //get currrent org unit
 
@@ -185,11 +185,11 @@ class EnrollmentPresenterImpl(
                                 .uid(enrollmentId).blockingGet()?.trackedEntityInstance()
 
                             // get current org unit
-
                             val orgUnit = d2.enrollmentModule().enrollments()
                                 .uid(enrollmentId)
                                 .blockingGet()
                                 ?.organisationUnit()
+
                             //find latest enrollment for a tei from source program
                             val teiFromSource = d2.enrollmentModule()
                                 .enrollments().byProgram()
@@ -197,40 +197,71 @@ class EnrollmentPresenterImpl(
                                 .eq(tei).orderByEnrollmentDate(RepositoryScope.OrderByDirection.ASC)
                                 .blockingGet().last()
 
-                            val dataValuesGroupedByPrograStages =
+                            val dataValuesGroupedByProgramStages =
                                 mappingRule?.sourceProgramStages?.map {
                                     autoEnrollmentConfigurations.getTrackedEntityDataValuesByProgramStageAndEnrollment(
                                         it.sourceProgramStage, teiFromSource.uid()
-                                    ).filter { it.dataElement()=="" }
+                                    ).filter { it.dataElement()?.isNotEmpty() == true}
                                 }
 
 
                             //create event projection
                             val ep = EventCreateProjection.create(
-                                "", "", "", "", ""
+                                teiFromSource.uid(),
+                                mappingRule?.targetProgram ?: "",
+                                mappingRule?.targetProgramStages?.firstOrNull()?.targetProgramStage,
+                                orgUnit ?: "",
+                                ""
                             )
 
-                            //create event and return an id
-                          val eventId =  d2.eventModule()
-                                .events()
-                                .blockingAdd(
-                                    ep
-                                )
+                            //create event and return a list of ids
+//
+                            // event IDs as a list
+                            val eventIds = mutableListOf<String>()
+                            try {
+                                val eventId = d2.eventModule()
+                                    .events()
+                                    .blockingAdd(ep) // Returns a single event ID
+                                eventIds.add(eventId)
+                            } catch (e: Exception) {
+                                println("Error creating event: ${e.message}")
+                            }
 
-                           //Pass the actual value for one data element
-                            val passvalues = d2.trackedEntityModule()
-                                .trackedEntityDataValues()
-                                .value("", "")
-                                .blockingSet("")
 
+                            eventIds.forEach { eventId ->
+                                try {
+                                    // For each program stage data value group
+                                    dataValuesGroupedByProgramStages?.forEachIndexed { index, dataValues ->
+                                        // Get the corresponding target program stage data elements
+                                        val targetDataElements = mappingRule.targetProgramStages
+                                            .getOrNull(index)?.targetprogramStageDataElements
 
+                                        // Match source data values with target data elements and set values
+                                        dataValues.forEach { sourceDataValue ->
+                                            // Find matching target data element based on mapping rule
+                                            val targetDataElement = targetDataElements?.find {
+                                                it.targetDataElement == sourceDataValue.dataElement()
+                                            }
 
+                                            // If we found a matching target data element, set the value
+                                            if (targetDataElement != null) {
+                                                 d2.trackedEntityModule()
+                                                    .trackedEntityDataValues()
+                                                    .value(eventId, targetDataElement.targetDataElement)
+                                                    .blockingSet(sourceDataValue.value())
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    println("Error setting values for event $eventId: ${e.message}")
+                                }
+                            }
 
                             eventAndEnrollmentIds.second?.let { view.openEvent(it) }
                                 ?: view.openDashboard(eventAndEnrollmentIds.first)
                         },
                         onError = {
-                            Timber.tag("CHECK_ENROLLMENNT").e(it)
+                            Timber.tag("CHECK_ENROLLMENT").e(it)
                         }
 
                     )
