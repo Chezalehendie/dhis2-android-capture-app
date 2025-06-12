@@ -12,7 +12,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import kotlin.collections.map
 import org.dhis2.usescases.customConfigTransformation.networkModels.SourceProgramStageDataElement
-import org.dhis2.usescases.customConfigTransformation.networkModels.deserializeJsonWrapper
 import timber.log.Timber
 
 class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
@@ -36,6 +35,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
             .byEnrollmentUid().eq(enrollmentUid)
             .byProgramStageUid().`in`(programStageUid)
             .blockingGet()
+        //Timber.tag("CHECK_ENROLLMENT").d("Events: $events")
 
         return if (events.isNotEmpty()) {
             d2.trackedEntityModule().trackedEntityDataValues()
@@ -57,8 +57,11 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
             d2.dataStoreModule().dataStore().byNamespace().eq("programMapping")
                 .byKey().eq("mapping_rules").one().get()
                 .map {
+                    //Timber.tag("CHECK_ENROLLMENT").d(it.value(), "The wrapped String from Store")
 
-                    val formattedJson = it.value()?.split("json=")[1]?.split(")")[0]
+                    val formattedJson = it.value()?.split("json=")?.get(1)?.split(")")?.get(0)
+
+                    //Timber.tag("CHECK_ENROLLMENT").d("Deserialized String: $formattedJson")
 
                     Gson().fromJson(
                         formattedJson,
@@ -66,7 +69,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
                     )
                 }
         } else {
-            Timber.tag("CHECK_ENROLLMENNT").d("Not found")
+            Timber.tag("CHECK_ENROLLMENT").d("Not found")
             Single.never()
         }
     }
