@@ -57,11 +57,11 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
             d2.dataStoreModule().dataStore().byNamespace().eq("programMapping")
                 .byKey().eq("mapping_rules").one().get()
                 .map {
-                    //Timber.tag("CHECK_ENROLLMENT").d(it.value(), "The wrapped String from Store")
+                    Timber.tag("CHECK_ENROLLMENT").d(it.value(), "The wrapped String from Store")
 
                     val formattedJson = it.value()?.split("json=")?.get(1)?.split(")")?.get(0)
 
-                    //Timber.tag("CHECK_ENROLLMENT").d("Deserialized String: $formattedJson")
+                    Timber.tag("CHECK_ENROLLMENT").d("Deserialized String: $formattedJson")
 
                     Gson().fromJson(
                         formattedJson,
