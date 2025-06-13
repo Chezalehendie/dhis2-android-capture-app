@@ -154,13 +154,13 @@ class EnrollmentPresenterImpl(
                         schedulerProvider,
                         onSuccess = { customConfigsAndEvents ->
                             val enrollmentConfig = customConfigsAndEvents.enrollmentConfig
-                            //Timber.tag("CHECK_ENROLLMENT").d("Enrollment Configs from data class: ${enrollmentConfig.toString()}")
+                            Timber.tag("CHECK_ENROLLMENT").d("Enrollment Configs from data class: ${enrollmentConfig.toString()}")
 
                             val eventAndEnrollmentIds = customConfigsAndEvents.eventAndEnrollmentIds
-                            //Timber.tag("CHECK_ENROLLMENT").d("Event and Enrollment Ids: ${eventAndEnrollmentIds.toString()}")
+                            Timber.tag("CHECK_ENROLLMENT").d("Event and Enrollment Ids: ${eventAndEnrollmentIds.toString()}")
 
                             val enrollmentId = eventAndEnrollmentIds.first
-                           // Timber.tag("CHECK_ENROLLMENT").d("Enrollment Id: $enrollmentId")
+                           Timber.tag("CHECK_ENROLLMENT").d("Enrollment Id: $enrollmentId")
 
                             val mappingRule = enrollmentConfig.mappingRules.find {
                                 it.targetProgram == d2.enrollmentModule()
@@ -168,7 +168,7 @@ class EnrollmentPresenterImpl(
                                     .uid(enrollmentId)
                                     .blockingGet()?.program()
                             }
-                            //Timber.tag("CHECK_ENROLLMENT").d( "Mapping Rule: ${mappingRule.toString()}")
+                            Timber.tag("CHECK_ENROLLMENT").d( "Mapping Rule: ${mappingRule.toString()}")
 
                             if(mappingRule != null){
                                 //Get current tei
@@ -176,25 +176,25 @@ class EnrollmentPresenterImpl(
                                     .enrollments()
                                     .uid(enrollmentId)
                                     .blockingGet()?.trackedEntityInstance()
-                                //Timber.tag("CHECK_ENROLLMENT").d( "Tracked Entity Instance: $tei")
+                                Timber.tag("CHECK_ENROLLMENT").d( "Tracked Entity Instance: $tei")
 
                                 // get current org unit
                                 val orgUnit = d2.enrollmentModule().enrollments()
                                     .uid(enrollmentId)
                                     .blockingGet()
                                     ?.organisationUnit()
-                                //Timber.tag("CHECK_ENROLLMENT").d( "Org Unit: $orgUnit")
+                                Timber.tag("CHECK_ENROLLMENT").d( "Org Unit: $orgUnit")
 
                                 // Extract the data element UIDs into a list
                                 val dataElementUids = mappingRule.targetProgramStages.firstOrNull()?.targetProgramStageDataElements?.map {
                                     it.targetDataElement
                                 }
-                                //Timber.tag("CHECK_ENROLLMENT").d("Data Elements: $dataElementUids")
+                                Timber.tag("CHECK_ENROLLMENT").d("Data Elements: $dataElementUids")
 
                                 val sourceDataElementsUids = mappingRule.sourceProgramStages.firstOrNull()?.sourceProgramStageDataElements?.map {
                                     it.sourceDataElement
                                 }
-                                //Timber.tag("CHECK_ENROLLMENT").d("Source Data Elements: $sourceDataElementsUids")
+                                Timber.tag("CHECK_ENROLLMENT").d("Source Data Elements: $sourceDataElementsUids")
 
                                 //find latest enrollment for a tei from source program
                                 val teiFromSource = d2.enrollmentModule()
@@ -202,7 +202,7 @@ class EnrollmentPresenterImpl(
                                     .eq(mappingRule.sourceProgram).byTrackedEntityInstance()
                                     .eq(tei).orderByEnrollmentDate(RepositoryScope.OrderByDirection.ASC)
                                     .blockingGet()[0]
-                                //Timber.tag("CHECK_ENROLLMENT").d( "Tracked Entity Instance From Source: $teiFromSource")
+                                Timber.tag("CHECK_ENROLLMENT").d( "Tracked Entity Instance From Source: $teiFromSource")
 
 
 
@@ -212,10 +212,13 @@ class EnrollmentPresenterImpl(
                                             it.sourceProgramStage, teiFromSource.uid()
                                         ).filter { entry ->
                                             entry.dataElement()=="${sourceDataElementsUids?.get(0)}"
-                                                    || entry.dataElement()=="${sourceDataElementsUids?.get(1)}"
+                                                    || entry.dataElement()=="${sourceDataElementsUids?.get(1)} "
+//                                                   || entry.dataElement()=="${sourceDataElementsUids?.get(2)}"
+//                                                    || entry.dataElement()=="${sourceDataElementsUids?.get(3)}"
+//                                                    || entry.dataElement()=="${sourceDataElementsUids?.get(4)}"
                                         }
                                     }
-                                //Timber.tag("CHECK_ENROLLMENT").d( "Data Values Grouped By Program Stages: ${dataValuesGroupedByProgramStages.toString()}")
+                                Timber.tag("CHECK_ENROLLMENT").d( "Data Values Grouped By Program Stages: ${dataValuesGroupedByProgramStages.toString()}")
 
                                 //create event projection
 
@@ -227,7 +230,7 @@ class EnrollmentPresenterImpl(
                                     orgUnit,
                                     null
                                 )
-                                //Timber.tag("CHECK_ENROLLMENT").d( "Event Projection: ${ep.toString()}")
+                                Timber.tag("CHECK_ENROLLMENT").d( "Event Projection: ${ep.toString()}")
 
                                 val eventId = d2.eventModule().events().blockingAdd(ep)
 
@@ -280,7 +283,6 @@ class EnrollmentPresenterImpl(
                         onError = {
                             Timber.tag("CHECK_ENROLLMENNT").e(it)
                         }
-
                     )
                 )
             }
