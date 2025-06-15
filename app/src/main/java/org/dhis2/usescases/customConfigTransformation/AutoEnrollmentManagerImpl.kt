@@ -14,7 +14,32 @@ import kotlin.collections.map
 import org.dhis2.usescases.customConfigTransformation.networkModels.SourceProgramStageDataElement
 import timber.log.Timber
 
+
+/**
+ * Implementation of the [AutoEnrollmentManager] responsible for handling
+ * automatic population of data elements between DHIS2 programs based on
+ * predefined configuration mappings.
+ *
+ * This class fetches TEI data values from a source program and prepares them
+ * for use in a target program during event or enrollment creation.
+ *
+ * @property d2 DHIS2 SDK instance used for accessing TEIs and data values.
+ */
+
+
 class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
+
+    /**
+     * Retrieves tracked entity data values for a given TEI in a specified program and stage.
+     *
+     * The data returned can be used to auto-populate fields in another program,
+     * based on configuration mappings stored in DHIS2.
+     *
+     * @param teiUid The UID of the tracked entity instance (TEI).
+     * @param programUid The UID of the program from which data should be fetched.
+     * @param stageUid The UID of the program stage to filter data values.
+     * @return A [Flowable] list of [TrackedEntityDataValue] items matching the query.
+     */
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun getTrackedEntityDataValues(dataElementsFromSourceProgram: List<SourceProgramStageDataElement>): Flowable<List<TrackedEntityDataValue>> {

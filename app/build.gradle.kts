@@ -324,3 +324,13 @@ dependencies {
     androidTestImplementation(libs.test.hamcrest)
     androidTestImplementation(libs.dispatcher.dispatchEspresso)
 }
+
+tasks.register<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
+    outputDirectory.set(buildDir.resolve("dokka"))
+    dokkaSourceSets {
+        named("main") {
+            suppress.set(false)
+        }
+    }
+}
+
